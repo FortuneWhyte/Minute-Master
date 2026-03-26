@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  /* === Colors (M3 Design Tokens) === */
+  --color-primary: #005db5;
+  --color-primary-dim: #0052a0;
+  --color-primary-container: #d6e3ff;
+  --color-primary-fixed: #d6e3ff;
+  --color-primary-fixed-dim: #bfd5ff;
+  --color-on-primary: #f6f7ff;
+  --color-on-primary-container: #00519e;
+  --color-on-primary-fixed: #003f7d;
+  --color-on-primary-fixed-variant: #005bb0;
+  --color-inverse-primary: #5f9efb;
+
+  --color-secondary: #5d5f65;
+  --color-secondary-dim: #515359;
+  --color-secondary-container: #e2e2e9;
+  --color-secondary-fixed: #e2e2e9;
+  --color-secondary-fixed-dim: #d3d4db;
+  --color-on-secondary: #f8f8ff;
+  --color-on-secondary-container: #505257;
+  --color-on-secondary-fixed: #3d3f45;
+  --color-on-secondary-fixed-variant: #5a5b61;
+
+  --color-tertiary: #5d5c78;
+  --color-tertiary-dim: #51516c;
+  --color-tertiary-container: #d9d7f8;
+  --color-tertiary-fixed: #d9d7f8;
+  --color-tertiary-fixed-dim: #cbc9e9;
+  --color-on-tertiary: #fbf7ff;
+  --color-on-tertiary-container: #4a4a65;
+  --color-on-tertiary-fixed: #383751;
+  --color-on-tertiary-fixed-variant: #54546f;
+
+  --color-error: #9f403d;
+  --color-error-dim: #4e0309;
+  --color-error-container: #fe8983;
+  --color-on-error: #fff7f6;
+  --color-on-error-container: #752121;
+
+  --color-surface: #f8f9fb;
+  --color-surface-dim: #d1dce2;
+  --color-surface-bright: #f8f9fb;
+  --color-surface-tint: #005db5;
+  --color-surface-variant: #dbe4ea;
+  --color-surface-container: #eaeef2;
+  --color-surface-container-low: #f1f4f7;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #e2e9ee;
+  --color-surface-container-highest: #dbe4ea;
+  --color-on-surface: #2b3438;
+  --color-on-surface-variant: #586065;
+
+  --color-background: #f8f9fb;
+  --color-on-background: #2b3438;
+
+  --color-outline: #737c81;
+  --color-outline-variant: #aab3b9;
+
+  --color-inverse-surface: #0c0f10;
+  --color-inverse-on-surface: #9b9d9f;
+
+  /* === Font Families === */
+  --font-headline: "Manrope", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Inter", sans-serif;
+
+  /* === Border Radius === */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/* === Material Symbols === */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* === Base Typography === */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, .font-headline {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* === Utility === */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.glass-nav {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
