@@ -89,22 +89,29 @@ export default function Settings() {
             </div>
             {/* Theme Preview Cards (Bento Layout) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
-              <div className="border-2 border-primary rounded-xl p-4 bg-surface-container-lowest flex flex-col gap-3 group cursor-pointer transition-all hover:shadow-md">
+              <div 
+                onClick={() => theme === 'dark' && toggleTheme()}
+                className={`border-2 rounded-xl p-4 bg-surface-container-lowest flex flex-col gap-3 group cursor-pointer transition-all hover:shadow-md ${theme === 'light' ? 'border-primary' : 'border-transparent hover:border-outline-variant'}`}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-primary font-label">LIGHT THEME</span>
-                  <span className="material-symbols-outlined text-primary text-sm">check_circle</span>
+                  <span className={`text-xs font-bold font-label ${theme === 'light' ? 'text-primary' : 'text-slate-400'}`}>LIGHT THEME</span>
+                  {theme === 'light' && <span className="material-symbols-outlined text-primary text-sm">check_circle</span>}
                 </div>
-                <div className="h-24 rounded-lg bg-surface flex flex-col p-2 gap-2 overflow-hidden">
+                <div className="h-24 rounded-lg bg-surface flex flex-col p-2 gap-2 overflow-hidden border border-outline-variant/10">
                   <div className="h-2 w-1/2 bg-slate-200 rounded"></div>
                   <div className="h-2 w-3/4 bg-slate-100 rounded"></div>
                   <div className="mt-auto h-8 bg-white rounded shadow-sm"></div>
                 </div>
               </div>
-              <div className="border-2 border-transparent rounded-xl p-4 bg-slate-900 flex flex-col gap-3 group cursor-pointer hover:border-outline-variant transition-all">
+              <div 
+                onClick={() => theme === 'light' && toggleTheme()}
+                className={`border-2 rounded-xl p-4 bg-slate-900 flex flex-col gap-3 group cursor-pointer transition-all hover:shadow-md ${theme === 'dark' ? 'border-primary' : 'border-transparent hover:border-outline-variant'}`}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-400 font-label">DARK THEME</span>
+                  <span className={`text-xs font-bold font-label ${theme === 'dark' ? 'text-primary' : 'text-slate-400'}`}>DARK THEME</span>
+                  {theme === 'dark' && <span className="material-symbols-outlined text-primary text-sm">check_circle</span>}
                 </div>
-                <div className="h-24 rounded-lg bg-slate-800 flex flex-col p-2 gap-2 overflow-hidden">
+                <div className="h-24 rounded-lg bg-slate-800 flex flex-col p-2 gap-2 overflow-hidden border border-slate-700">
                   <div className="h-2 w-1/2 bg-slate-700 rounded"></div>
                   <div className="h-2 w-3/4 bg-slate-600 rounded"></div>
                   <div className="mt-auto h-8 bg-slate-700 rounded shadow-sm"></div>

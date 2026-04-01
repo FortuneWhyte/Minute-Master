@@ -1,7 +1,7 @@
 import { useAppStore } from '../../store/useAppStore';
 
 export default function Dashboard() {
-  const { meetings, currentMeetingId, updateMinutesText, addActionItem } = useAppStore();
+  const { meetings, currentMeetingId, updateMinutesText } = useAppStore();
   const currentMeeting = meetings.find(m => m.id === currentMeetingId);
 
   return (
