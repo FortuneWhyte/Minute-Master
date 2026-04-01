@@ -1,4 +1,9 @@
+import { useAppStore } from '../../store/useAppStore';
+
 export default function Dashboard() {
+  const { meetings, currentMeetingId, updateMinutesText, addActionItem } = useAppStore();
+  const currentMeeting = meetings.find(m => m.id === currentMeetingId);
+
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <div className="flex-1 space-y-12">
@@ -6,19 +11,21 @@ export default function Dashboard() {
         <section className="bg-surface-container-lowest rounded-lg p-6 shadow-sm border-l-4 border-primary flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-1">
             <span className="text-xs font-bold uppercase tracking-widest text-tertiary">Current Project</span>
-            <h2 className="text-xl font-bold text-on-surface">Harborview Condominiums AGM</h2>
+            <h2 className="text-xl font-bold text-on-surface">{currentMeeting?.title || 'No Project Selected'}</h2>
           </div>
           <div className="flex gap-12">
             <div>
               <span className="text-xs font-bold uppercase tracking-widest text-tertiary">Status</span>
               <div className="flex items-center gap-2 text-primary font-semibold">
-                <span className="material-symbols-outlined text-sm">sync</span>
-                Processing
+                <span className="material-symbols-outlined text-sm">
+                  {currentMeeting?.status === 'Processing' ? 'sync' : 'check_circle'}
+                </span>
+                {currentMeeting?.status || 'Unknown'}
               </div>
             </div>
             <div>
               <span className="text-xs font-bold uppercase tracking-widest text-tertiary">Detected Motions</span>
-              <p className="text-2xl font-bold text-on-surface">08</p>
+              <p className="text-2xl font-bold text-on-surface">{currentMeeting?.motions.length || 0 < 10 ? `0${currentMeeting?.motions.length || 0}` : currentMeeting?.motions.length}</p>
             </div>
           </div>
         </section>
@@ -131,18 +138,19 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-sm divide-y divide-outline-variant/5">
-                    <tr>
-                      <td className="py-4 pr-4 font-medium">Approval of 2022 AGM Minutes as distributed</td>
-                      <td className="py-4">Jane Cooper</td>
-                      <td className="py-4">Robert Fox</td>
-                      <td className="py-4 text-emerald-600 font-bold">Carried</td>
-                    </tr>
-                    <tr>
-                      <td className="py-4 pr-4 font-medium">Appointment of Auditor for the 2023 Fiscal Year</td>
-                      <td className="py-4">Cody Fisher</td>
-                      <td className="py-4">Esther Howard</td>
-                      <td className="py-4 text-emerald-600 font-bold">Carried</td>
-                    </tr>
+                    {currentMeeting?.motions.map((motion) => (
+                      <tr key={motion.id}>
+                        <td className="py-4 pr-4 font-medium">{motion.description}</td>
+                        <td className="py-4">{motion.mover}</td>
+                        <td className="py-4">{motion.seconder}</td>
+                        <td className="py-4 text-emerald-600 font-bold">{motion.result}</td>
+                      </tr>
+                    ))}
+                    {(!currentMeeting?.motions || currentMeeting.motions.length === 0) && (
+                      <tr>
+                        <td colSpan={4} className="py-4 text-center text-on-surface-variant text-xs">No motions detected yet.</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -170,20 +178,8 @@ export default function Dashboard() {
             <textarea
               className="w-full min-h-[400px] p-8 bg-surface-container-lowest rounded-xl shadow-inner border border-outline-variant/20 focus:ring-4 focus:ring-primary/5 focus:border-primary/40 transition-all font-body leading-relaxed text-on-surface resize-none"
               placeholder="Minutes text will appear here after processing..."
-              defaultValue={`1. CALL TO ORDER
-The meeting was called to order at 7:05 PM by the Chair, Mr. Henderson.
-
-2. PROOF OF NOTICE
-The Secretary confirmed that notice of the meeting was mailed to all owners of record on October 1st, 2023.
-
-3. APPROVAL OF AGENDA
-IT WAS MOVED by Jane Cooper and SECONDED by Robert Fox that the agenda be approved as presented. CARRIED.
-
-4. CHAIR'S REPORT
-Mr. Henderson discussed the recent roof repairs and the upcoming landscaping project for the North Wing. He noted that the budget remains on track despite increased utility costs.
-
-5. NEW BUSINESS: POOL DECK RENOVATIONS
-Extensive discussion regarding the tile selection for the pool area. The board reviewed three quotes from local contractors.`}
+              value={currentMeeting?.minutesText || ''}
+              onChange={(e) => currentMeeting && updateMinutesText(currentMeeting.id, e.target.value)}
             />
             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
               <span className="text-xs bg-surface-container-high px-2 py-1 rounded text-outline font-medium">Auto-saving...</span>

@@ -1,4 +1,14 @@
+import { useAppStore } from '../../store/useAppStore';
+import { useNavigate } from 'react-router-dom';
+
 export default function History() {
+  const { meetings, setCurrentMeetingId } = useAppStore();
+  const navigate = useNavigate();
+
+  const handleViewMeeting = (id: string) => {
+    setCurrentMeetingId(id);
+    navigate('/');
+  };
   return (
     <>
       {/* Master Summary Bar */}
@@ -61,86 +71,41 @@ export default function History() {
           <div className="col-span-2">Motions</div>
           <div className="col-span-2 text-right">Actions</div>
         </div>
-        {/* Row 1 */}
-        <div className="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
-          <div className="col-span-2 text-sm text-slate-500 font-medium">Oct 24, 2023</div>
-          <div className="col-span-4 font-headline font-bold text-on-surface">Harborview Condominiums AGM</div>
-          <div className="col-span-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span>
-              Completed
-            </span>
+        {meetings.map((meeting) => (
+          <div key={meeting.id} className="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
+            <div className="col-span-2 text-sm text-slate-500 font-medium">{meeting.date}</div>
+            <div className="col-span-4 font-headline font-bold text-on-surface">{meeting.title}</div>
+            <div className="col-span-2">
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                meeting.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                meeting.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
+                'bg-red-100 text-red-700'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                  meeting.status === 'Completed' ? 'bg-emerald-500' :
+                  meeting.status === 'Processing' ? 'bg-blue-500' :
+                  'bg-red-500'
+                }`}></span>
+                {meeting.status}
+              </span>
+            </div>
+            <div className="col-span-2 text-sm font-medium text-slate-600">
+              {meeting.motions.length > 0 ? `${meeting.motions.length} Motions` : '--'}
+            </div>
+            <div className="col-span-2 flex justify-end gap-2">
+              <button 
+                onClick={() => handleViewMeeting(meeting.id)}
+                className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" 
+                title="View"
+              >
+                <span className="material-symbols-outlined">visibility</span>
+              </button>
+              <button className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors disabled:opacity-50" title="Download PDF" disabled={meeting.status !== 'Completed'}>
+                <span className="material-symbols-outlined">download</span>
+              </button>
+            </div>
           </div>
-          <div className="col-span-2 text-sm font-medium text-slate-600">08 Motions</div>
-          <div className="col-span-2 flex justify-end gap-2">
-            <button className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="View">
-              <span className="material-symbols-outlined">visibility</span>
-            </button>
-            <button className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="Download PDF">
-              <span className="material-symbols-outlined">download</span>
-            </button>
-          </div>
-        </div>
-        {/* Row 2 */}
-        <div className="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
-          <div className="col-span-2 text-sm text-slate-500 font-medium">Oct 20, 2023</div>
-          <div className="col-span-4 font-headline font-bold text-on-surface">Sunset Terrace Monthly</div>
-          <div className="col-span-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></span>
-              Processing
-            </span>
-          </div>
-          <div className="col-span-2 text-sm font-medium text-slate-300">--</div>
-          <div className="col-span-2 flex justify-end gap-2">
-            <button className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="View">
-              <span className="material-symbols-outlined">visibility</span>
-            </button>
-            <button className="p-2 text-slate-300 cursor-not-allowed rounded-lg" disabled>
-              <span className="material-symbols-outlined">download</span>
-            </button>
-          </div>
-        </div>
-        {/* Row 3 */}
-        <div className="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
-          <div className="col-span-2 text-sm text-slate-500 font-medium">Oct 15, 2023</div>
-          <div className="col-span-4 font-headline font-bold text-on-surface">Riverside Heights Budget Meeting</div>
-          <div className="col-span-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span>
-              Completed
-            </span>
-          </div>
-          <div className="col-span-2 text-sm font-medium text-slate-600">12 Motions</div>
-          <div className="col-span-2 flex justify-end gap-2">
-            <button className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="View">
-              <span className="material-symbols-outlined">visibility</span>
-            </button>
-            <button className="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="Download PDF">
-              <span className="material-symbols-outlined">download</span>
-            </button>
-          </div>
-        </div>
-        {/* Row 4 (Error State Example) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
-          <div className="col-span-2 text-sm text-slate-500 font-medium">Oct 12, 2023</div>
-          <div className="col-span-4 font-headline font-bold text-on-surface">Oakwood Strategic Planning</div>
-          <div className="col-span-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-2"></span>
-              Error
-            </span>
-          </div>
-          <div className="col-span-2 text-sm font-medium text-slate-300">--</div>
-          <div className="col-span-2 flex justify-end gap-2">
-            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Retry">
-              <span className="material-symbols-outlined">refresh</span>
-            </button>
-            <button className="p-2 text-slate-300 cursor-not-allowed rounded-lg" disabled>
-              <span className="material-symbols-outlined">delete</span>
-            </button>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Pagination */}

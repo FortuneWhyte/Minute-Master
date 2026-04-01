@@ -1,4 +1,7 @@
+import { useAppStore } from '../../store/useAppStore';
+
 export default function Settings() {
+  const { theme, toggleTheme } = useAppStore();
   return (
     <div className="max-w-5xl mx-auto">
       {/* Master Summary Bar (Signature Component) */}
@@ -80,7 +83,7 @@ export default function Settings() {
                 </div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
-                <input className="sr-only peer" type="checkbox" defaultValue="" />
+                <input className="sr-only peer" type="checkbox" checked={theme === 'dark'} onChange={toggleTheme} />
                 <div className="w-14 h-7 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               </label>
             </div>
