@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meeting History - Minute Master</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#505257",
+              "background": "#f8f9fb",
+              "tertiary-dim": "#51516c",
+              "error-container": "#fe8983",
+              "error-dim": "#4e0309",
+              "surface-bright": "#f8f9fb",
+              "on-error": "#fff7f6",
+              "error": "#9f403d",
+              "on-primary-fixed": "#003f7d",
+              "tertiary": "#5d5c78",
+              "surface-container-low": "#f1f4f7",
+              "secondary-fixed-dim": "#d3d4db",
+              "surface": "#f8f9fb",
+              "on-surface": "#2b3438",
+              "on-error-container": "#752121",
+              "secondary": "#5d5f65",
+              "on-secondary-fixed-variant": "#5a5b61",
+              "on-secondary": "#f8f8ff",
+              "surface-variant": "#dbe4ea",
+              "outline-variant": "#aab3b9",
+              "surface-container-highest": "#dbe4ea",
+              "tertiary-container": "#d9d7f8",
+              "on-primary-container": "#00519e",
+              "surface-container-high": "#e2e9ee",
+              "on-primary-fixed-variant": "#005bb0",
+              "tertiary-fixed": "#d9d7f8",
+              "primary-fixed-dim": "#bfd5ff",
+              "primary-fixed": "#d6e3ff",
+              "primary-container": "#d6e3ff",
+              "on-surface-variant": "#586065",
+              "on-tertiary-fixed-variant": "#54546f",
+              "secondary-dim": "#515359",
+              "surface-dim": "#d1dce2",
+              "surface-container": "#eaeef2",
+              "secondary-container": "#e2e2e9",
+              "on-secondary-fixed": "#3d3f45",
+              "on-tertiary-container": "#4a4a65",
+              "secondary-fixed": "#e2e2e9",
+              "inverse-surface": "#0c0f10",
+              "on-primary": "#f6f7ff",
+              "tertiary-fixed-dim": "#cbc9e9",
+              "primary": "#005db5",
+              "on-tertiary-fixed": "#383751",
+              "inverse-on-surface": "#9b9d9f",
+              "on-background": "#2b3438",
+              "surface-tint": "#005db5",
+              "primary-dim": "#0052a0",
+              "inverse-primary": "#5f9efb",
+              "on-tertiary": "#fbf7ff",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#737c81"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center h-16 px-8 w-full mx-auto max-w-[1440px]">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-slate-900">Minute Master</span>
+<nav class="hidden md:flex gap-6 font-manrope antialiased tracking-tight text-sm font-medium">
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Dashboard</a>
+<a class="text-blue-700 font-semibold border-b-2 border-blue-700 pb-1" href="#">History</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Insights</a>
+<a class="text-slate-500 hover:text-slate-900 transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-slate-400 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface-variant" placeholder="Search projects..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-lg transition-all active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-lg transition-all active:scale-95">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Hidden on small screens) -->
+<aside class="hidden lg:flex h-screen w-64 fixed left-0 top-0 bg-slate-100 flex-col py-6 gap-2 z-40 border-r-0 pt-20">
+<div class="px-6 mb-8">
+<h2 class="text-lg font-black text-blue-700">Minute Master</h2>
+<p class="text-xs font-medium text-slate-500 uppercase tracking-widest">Architectural Editor</p>
+</div>
+<nav class="flex flex-col gap-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 rounded-lg transition-transform duration-150 ease-out font-manrope text-sm font-medium" href="#">
+<span class="material-symbols-outlined">input</span>
+<span>Input Gate</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-white text-blue-700 rounded-l-xl shadow-sm transition-transform duration-150 ease-out font-manrope text-sm font-medium" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">database</span>
+<span>Data Preview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 rounded-lg transition-transform duration-150 ease-out font-manrope text-sm font-medium" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span>Edit Mode</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 rounded-lg transition-transform duration-150 ease-out font-manrope text-sm font-medium" href="#">
+<span class="material-symbols-outlined">bolt</span>
+<span>Actions</span>
+</a>
+</nav>
+<div class="mt-auto px-6 py-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+<span class="text-xs font-bold text-on-primary-container">JD</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate text-on-surface">Jane Doe</p>
+<p class="text-[10px] text-slate-500 truncate">Premium Plan</p>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-24 pb-12 px-6 md:px-12 max-w-[1440px] mx-auto">
+<!-- Master Summary Bar -->
+<section class="w-full bg-surface-container-lowest rounded-xl shadow-sm mb-12 flex items-center p-6 border-l-4 border-primary">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-label">Total Minutes</span>
+<span class="text-3xl font-extrabold text-on-surface tracking-tight font-headline">1,284 <span class="text-sm font-medium text-slate-400 ml-1">mins</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-label">Processed Projects</span>
+<span class="text-3xl font-extrabold text-on-surface tracking-tight font-headline">42 <span class="text-sm font-medium text-slate-400 ml-1">items</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase font-label">Success Rate</span>
+<span class="text-3xl font-extrabold text-primary tracking-tight font-headline">98.2%</span>
+</div>
+</div>
+</section>
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div>
+<h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-on-surface font-headline mb-2">Meeting History</h1>
+<p class="text-slate-500 font-body">Review and manage your past processed minutes.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-low text-on-surface font-medium rounded-lg hover:bg-surface-container-high transition-colors text-sm">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+<span>Status Filter</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary font-medium rounded-lg shadow-sm hover:bg-primary-dim transition-colors text-sm">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>New Process</span>
+</button>
+</div>
+</header>
+<!-- Search and Filter Bar -->
+<div class="bg-surface-container-low p-2 rounded-xl mb-6 flex flex-col md:flex-row gap-2">
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-lg py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 text-sm text-on-surface" placeholder="Search by project name or date..." type="text"/>
+</div>
+<select class="bg-surface-container-lowest border-none rounded-lg py-3 px-6 focus:ring-2 focus:ring-primary/20 text-sm text-on-surface font-medium min-w-[160px]">
+<option>All Status</option>
+<option>Completed</option>
+<option>Processing</option>
+<option>Error</option>
+</select>
+</div>
+<!-- History Table / Card List -->
+<div class="space-y-4">
+<!-- Table Header (Desktop) -->
+<div class="hidden md:grid grid-cols-12 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 font-label">
+<div class="col-span-2">Date</div>
+<div class="col-span-4">Project Name</div>
+<div class="col-span-2">Status</div>
+<div class="col-span-2">Motions</div>
+<div class="col-span-2 text-right">Actions</div>
+</div>
+<!-- Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
+<div class="col-span-2 text-sm text-slate-500 font-medium">Oct 24, 2023</div>
+<div class="col-span-4 font-headline font-bold text-on-surface">Harborview Condominiums AGM</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                        Completed
+                    </span>
+</div>
+<div class="col-span-2 text-sm font-medium text-slate-600">08 Motions</div>
+<div class="col-span-2 flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="View">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="Download PDF">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
+<div class="col-span-2 text-sm text-slate-500 font-medium">Oct 20, 2023</div>
+<div class="col-span-4 font-headline font-bold text-on-surface">Sunset Terrace Monthly</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2"></span>
+                        Processing
+                    </span>
+</div>
+<div class="col-span-2 text-sm font-medium text-slate-300">--</div>
+<div class="col-span-2 flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="View">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-slate-300 cursor-not-allowed rounded-lg" disabled="">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
+<div class="col-span-2 text-sm text-slate-500 font-medium">Oct 15, 2023</div>
+<div class="col-span-4 font-headline font-bold text-on-surface">Riverside Heights Budget Meeting</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                        Completed
+                    </span>
+</div>
+<div class="col-span-2 text-sm font-medium text-slate-600">12 Motions</div>
+<div class="col-span-2 flex justify-end gap-2">
+<button class="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="View">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary-container/30 rounded-lg transition-colors" title="Download PDF">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Row 4 (Error State Example) -->
+<div class="grid grid-cols-1 md:grid-cols-12 items-center bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow gap-4 md:gap-0">
+<div class="col-span-2 text-sm text-slate-500 font-medium">Oct 12, 2023</div>
+<div class="col-span-4 font-headline font-bold text-on-surface">Oakwood Strategic Planning</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-2"></span>
+                        Error
+                    </span>
+</div>
+<div class="col-span-2 text-sm font-medium text-slate-300">--</div>
+<div class="col-span-2 flex justify-end gap-2">
+<button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Retry">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="p-2 text-slate-300 cursor-not-allowed rounded-lg" disabled="">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<footer class="mt-12 flex items-center justify-between border-t border-slate-200 pt-8">
+<span class="text-sm text-slate-500">Showing 1 to 4 of 42 results</span>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container-low text-on-surface rounded-lg text-sm font-medium hover:bg-surface-container-high disabled:opacity-50" disabled="">Previous</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary-dim">1</button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface rounded-lg text-sm font-medium hover:bg-surface-container-high">2</button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface rounded-lg text-sm font-medium hover:bg-surface-container-high">Next</button>
+</div>
+</footer>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full md:hidden bg-slate-50/80 backdrop-blur-md z-50 px-4 py-3 flex justify-around">
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-blue-700" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="text-[10px] font-bold">History</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="text-[10px] font-bold">Insights</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</a>
+</nav>
+</body></html>
