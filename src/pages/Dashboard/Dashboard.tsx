@@ -1,8 +1,99 @@
+import { useState, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import { supabase } from '../../lib/supabase';
 
 export default function Dashboard() {
-  const { meetings, currentMeetingId, updateMinutesText } = useAppStore();
+  const { meetings, currentMeetingId, updateMinutesText, organizationId, fetchMeetings } = useAppStore();
   const currentMeeting = meetings.find(m => m.id === currentMeetingId);
+
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProcess = async () => {
+    if (!transcriptFile || !organizationId) return;
+
+    setProcessing(true);
+    setProcessingStatus('Reading file...');
+
+    try {
+      // Read file text
+      const text = await transcriptFile.text();
+      setProcessingStatus('AI Engine processing transcript...');
+
+      // Send to backend
+      const res = await fetch('/api/process-transcript', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Processing failed');
+      }
+
+      const result = await res.json();
+      setProcessingStatus('Saving to database...');
+
+      // Save meeting to Supabase
+      const { data: meetingData, error: meetingError } = await supabase
+        .from('meetings')
+        .insert({
+          organization_id: organizationId,
+          title: result.title || transcriptFile.name.replace(/\.[^/.]+$/, ''),
+          date: result.date || new Date().toLocaleDateString(),
+          status: 'Completed',
+          minutes_text: result.minutes_text || '',
+          location: result.location || '',
+          board_members: result.board_members || 0,
+          residents: result.residents || 0,
+        })
+        .select()
+        .single();
+
+      if (meetingError) throw new Error(meetingError.message);
+
+      // Save motions
+      if (result.motions?.length > 0) {
+        await supabase.from('motions').insert(
+          result.motions.map((m: { description: string; mover: string; seconder: string; result: string }) => ({
+            meeting_id: meetingData.id,
+            description: m.description,
+            mover: m.mover,
+            seconder: m.seconder,
+            result: m.result,
+          }))
+        );
+      }
+
+      // Save action items
+      if (result.action_items?.length > 0) {
+        await supabase.from('action_items').insert(
+          result.action_items.map((a: { task: string; assignee: string; status: string }) => ({
+            meeting_id: meetingData.id,
+            task: a.task,
+            assignee: a.assignee,
+            status: a.status || 'Pending',
+          }))
+        );
+      }
+
+      setProcessingStatus('Complete!');
+      setTranscriptFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+
+      // Refresh meetings from DB
+      await fetchMeetings();
+
+    } catch (err) {
+      setProcessingStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setProcessing(false);
+      setTimeout(() => setProcessingStatus(''), 5000);
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
@@ -18,14 +109,14 @@ export default function Dashboard() {
               <span className="text-xs font-bold uppercase tracking-widest text-tertiary">Status</span>
               <div className="flex items-center gap-2 text-primary font-semibold">
                 <span className="material-symbols-outlined text-sm">
-                  {currentMeeting?.status === 'Processing' ? 'sync' : 'check_circle'}
+                  {currentMeeting?.status === 'Processing' ? 'sync' : currentMeeting?.status === 'Completed' ? 'check_circle' : 'radio_button_unchecked'}
                 </span>
-                {currentMeeting?.status || 'Unknown'}
+                {currentMeeting?.status || 'Awaiting Upload'}
               </div>
             </div>
             <div>
               <span className="text-xs font-bold uppercase tracking-widest text-tertiary">Detected Motions</span>
-              <p className="text-2xl font-bold text-on-surface">{currentMeeting?.motions.length || 0 < 10 ? `0${currentMeeting?.motions.length || 0}` : currentMeeting?.motions.length}</p>
+              <p className="text-2xl font-bold text-on-surface">{String(currentMeeting?.motions.length || 0).padStart(2, '0')}</p>
             </div>
           </div>
         </section>
@@ -35,49 +126,59 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-bold tracking-tight text-on-surface">Upload Meeting Files</h3>
             <div className="flex items-center gap-2 text-sm text-tertiary">
-              <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
-              AI Engine Ready
+              {processing ? (
+                <>
+                  <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                  {processingStatus}
+                </>
+              ) : processingStatus ? (
+                <>
+                  <span className="material-symbols-outlined text-primary">
+                    {processingStatus.startsWith('Error') ? 'error' : 'check_circle'}
+                  </span>
+                  {processingStatus}
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-primary">smart_toy</span>
+                  AI Engine Ready
+                </>
+              )}
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-surface-container-low rounded-xl p-8 space-y-4 hover:bg-surface-container-high transition-colors group">
-              <div className="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
-                <span className="material-symbols-outlined">description</span>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">Transcript File</label>
-                <input className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-on-primary hover:file:bg-primary-dim transition-all" type="file" />
-                <p className="mt-2 text-xs text-on-surface-variant">Upload raw Zoom transcript (.txt or .vtt)</p>
-              </div>
+          <div className="bg-surface-container-low rounded-xl p-8 space-y-4 hover:bg-surface-container-high transition-colors group">
+            <div className="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+              <span className="material-symbols-outlined">description</span>
             </div>
-            <div className="bg-surface-container-low rounded-xl p-8 space-y-4 hover:bg-surface-container-high transition-colors group">
-              <div className="w-12 h-12 rounded-lg bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
-                <span className="material-symbols-outlined">analytics</span>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">AI Summary (Optional)</label>
-                <input className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-on-secondary hover:file:bg-secondary-dim transition-all" type="file" />
-                <p className="mt-2 text-xs text-on-surface-variant">Provide pre-generated AI notes for better context</p>
-              </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1">Transcript File</label>
+              <input
+                ref={fileInputRef}
+                className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-on-primary hover:file:bg-primary-dim transition-all"
+                type="file"
+                accept=".txt,.vtt,.srt"
+                onChange={(e) => setTranscriptFile(e.target.files?.[0] || null)}
+              />
+              <p className="mt-2 text-xs text-on-surface-variant">Upload raw Zoom transcript (.txt or .vtt)</p>
+              {transcriptFile && (
+                <p className="mt-1 text-xs text-primary font-semibold">
+                  Selected: {transcriptFile.name} ({(transcriptFile.size / 1024).toFixed(1)} KB)
+                </p>
+              )}
             </div>
           </div>
-          <div className="flex flex-col md:flex-row gap-6 items-end">
-            <div className="flex-1 w-full">
-              <label className="block text-sm font-bold uppercase tracking-widest text-tertiary mb-2">Condo Association Logo</label>
-              <select className="w-full bg-surface-container-low border-none rounded-lg h-12 px-4 focus:ring-2 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
-                <option>Harborview Condominiums</option>
-                <option>Skyline Towers</option>
-                <option>Green Valley Estates</option>
-                <option>Upload New...</option>
-              </select>
-            </div>
-            <button className="h-12 px-8 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-              Process Files
+          <div className="flex items-end justify-end">
+            <button
+              onClick={handleProcess}
+              disabled={!transcriptFile || processing}
+              className="h-12 px-8 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {processing ? 'Processing...' : 'Process Files'}
             </button>
           </div>
         </section>
 
-        {/* Section 2: Extracted Data Preview (Bento Grid Style) */}
+        {/* Section 2: Extracted Data Preview */}
         <section className="space-y-6" id="preview">
           <h3 className="text-2xl font-bold tracking-tight text-on-surface">Extracted Data Preview</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -90,11 +191,11 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <p className="text-xs text-tertiary">Date &amp; Time</p>
-                  <p className="font-semibold">Oct 24, 2023 • 7:00 PM</p>
+                  <p className="font-semibold">{currentMeeting?.date || '—'}</p>
                 </div>
                 <div>
                   <p className="text-xs text-tertiary">Location</p>
-                  <p className="font-semibold">Zoom / Amenity Room</p>
+                  <p className="font-semibold">{currentMeeting?.metadata?.location || '—'}</p>
                 </div>
               </div>
             </div>
@@ -105,9 +206,8 @@ export default function Dashboard() {
                 <span className="material-symbols-outlined text-outline">group</span>
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-medium">14 Board Members</p>
-                <p className="text-sm font-medium text-on-surface-variant">22 Residents (Proxy)</p>
-                <p className="text-xs text-primary font-semibold mt-2 underline cursor-pointer">View full list</p>
+                <p className="text-sm font-medium">{currentMeeting?.metadata?.attendance?.boardMembers || 0} Board Members</p>
+                <p className="text-sm font-medium text-on-surface-variant">{currentMeeting?.metadata?.attendance?.residents || 0} Residents</p>
               </div>
             </div>
             {/* Action Items Card */}
@@ -116,16 +216,13 @@ export default function Dashboard() {
                 <span className="text-xs font-bold uppercase tracking-widest text-tertiary">Action Items</span>
                 <span className="material-symbols-outlined text-tertiary">assignment_turned_in</span>
               </div>
-              <p className="text-3xl font-bold text-tertiary">05</p>
+              <p className="text-3xl font-bold text-tertiary">{String(currentMeeting?.actionItems.length || 0).padStart(2, '0')}</p>
               <p className="text-xs text-on-tertiary-fixed-variant">Pending assignment</p>
             </div>
-            {/* Motions Table Area */}
+            {/* Motions Table */}
             <div className="md:col-span-4 bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/15">
               <div className="flex items-center justify-between mb-6">
                 <h4 className="font-bold text-lg">Key Motions</h4>
-                <button className="text-sm text-primary font-semibold flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm">add</span> Add Motion
-                </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
@@ -148,7 +245,10 @@ export default function Dashboard() {
                     ))}
                     {(!currentMeeting?.motions || currentMeeting.motions.length === 0) && (
                       <tr>
-                        <td colSpan={4} className="py-4 text-center text-on-surface-variant text-xs">No motions detected yet.</td>
+                        <td colSpan={4} className="py-8 text-center text-on-surface-variant text-sm">
+                          <span className="material-symbols-outlined text-3xl text-outline-variant block mb-2">upload_file</span>
+                          Upload a transcript to extract motions
+                        </td>
                       </tr>
                     )}
                   </tbody>
@@ -206,7 +306,7 @@ export default function Dashboard() {
         </section>
 
         <footer className="pt-8 text-center text-xs text-outline border-t border-outline-variant/10">
-          <p>© 2023 Minute Master. Optimized for Professional Board Governance.</p>
+          <p>© 2026 Minute Master. Optimized for Professional Board Governance.</p>
         </footer>
       </div>
     </div>
