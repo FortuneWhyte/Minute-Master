@@ -17,13 +17,7 @@ export default function TopNavBar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const userEmail = session?.user?.email || '';
-  const userName = session?.user?.user_metadata?.full_name || userEmail.split('@')[0] || 'User';
-  const initials = userName
-    .split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = userEmail.slice(0, 2).toUpperCase();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -88,8 +82,8 @@ export default function TopNavBar() {
                       {initials}
                     </div>
                     <div className="overflow-hidden">
-                      <p className="text-sm font-bold text-slate-900 dark:text-slate-50 truncate">{userName}</p>
-                      <p className="text-xs text-slate-500 truncate">{userEmail}</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-slate-50 truncate">{userEmail}</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Signed in</p>
                     </div>
                   </div>
                   {organizationName && (

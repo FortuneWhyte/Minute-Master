@@ -18,13 +18,7 @@ const sideNavItems: SideNavItem[] = [
 export default function SideNavBar() {
   const { session, organizationName } = useAppStore();
   const userEmail = session?.user?.email || '';
-  const userName = session?.user?.user_metadata?.full_name || userEmail.split('@')[0] || 'User';
-  const initials = userName
-    .split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  const initials = userEmail.slice(0, 2).toUpperCase();
 
   return (
     <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 h-screen bg-slate-100 dark:bg-slate-950 py-6 gap-2 z-40 pt-20">
@@ -59,7 +53,7 @@ export default function SideNavBar() {
             {initials}
           </div>
           <div className="overflow-hidden">
-            <p className="text-xs font-bold truncate">{userName}</p>
+            <p className="text-xs font-bold truncate">{userEmail}</p>
             <p className="text-[10px] text-slate-500 truncate">{organizationName || 'Free Plan'}</p>
           </div>
         </div>

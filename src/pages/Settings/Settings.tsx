@@ -23,47 +23,6 @@ export default function Settings() {
       </div>
 
       <div className="space-y-16">
-        {/* Profile Section */}
-        <section className="scroll-mt-24" id="profile">
-          <div className="flex items-start justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-extrabold font-headline tracking-tight text-on-surface mb-2">Profile</h2>
-              <p className="text-on-surface-variant max-w-md">Update your personal information and how others see you on the platform.</p>
-            </div>
-          </div>
-          <div className="bg-surface-container-low rounded-xl p-8 space-y-8">
-            <div className="flex items-center gap-8">
-              <div className="relative group">
-                <div className="h-24 w-24 rounded-full overflow-hidden bg-surface-container-highest border-4 border-surface-container-lowest">
-                  <div className="h-full w-full bg-primary-container flex items-center justify-center">
-                    <span className="text-2xl font-bold text-on-primary-container">AS</span>
-                  </div>
-                </div>
-                <button className="absolute bottom-0 right-0 bg-primary text-on-primary p-2 rounded-full shadow-lg hover:scale-105 transition-transform">
-                  <span className="material-symbols-outlined text-sm">edit</span>
-                </button>
-              </div>
-              <div>
-                <h4 className="font-headline font-bold text-lg mb-1">Avatar</h4>
-                <p className="text-sm text-on-surface-variant mb-3">JPG, GIF or PNG. Max size 800K.</p>
-                <div className="flex gap-3">
-                  <button className="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity">Upload new</button>
-                  <button className="bg-surface-container-highest text-on-surface-variant px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-slate-200 transition-colors">Remove</button>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.1em] font-bold text-outline font-label">Full Name</label>
-                <input className="w-full bg-surface-container-lowest border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all font-body text-sm" placeholder="Your name" type="text" defaultValue="Alex Sterling" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.1em] font-bold text-outline font-label">Email Address</label>
-                <input className="w-full bg-surface-container-lowest border-none rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary/40 transition-all font-body text-sm" placeholder="email@example.com" type="email" defaultValue="alex@minutemaster.io" />
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Appearance Section */}
         <section className="scroll-mt-24" id="appearance">
