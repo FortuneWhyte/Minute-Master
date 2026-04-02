@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useAppStore } from '../../store/useAppStore';
 
 interface SideNavItem {
   icon: string;
@@ -15,6 +16,16 @@ const sideNavItems: SideNavItem[] = [
 ];
 
 export default function SideNavBar() {
+  const { session, organizationName } = useAppStore();
+  const userEmail = session?.user?.email || '';
+  const userName = session?.user?.user_metadata?.full_name || userEmail.split('@')[0] || 'User';
+  const initials = userName
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
     <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 h-screen bg-slate-100 dark:bg-slate-950 py-6 gap-2 z-40 pt-20">
       <div className="px-6 mb-8">
@@ -45,11 +56,11 @@ export default function SideNavBar() {
       <div className="px-4 mt-auto">
         <div className="p-4 bg-white dark:bg-slate-900 rounded-xl flex items-center gap-3 shadow-sm">
           <div className="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">
-            JD
+            {initials}
           </div>
           <div className="overflow-hidden">
-            <p className="text-xs font-bold truncate">Jane Doe</p>
-            <p className="text-[10px] text-slate-500 truncate">Premium Plan</p>
+            <p className="text-xs font-bold truncate">{userName}</p>
+            <p className="text-[10px] text-slate-500 truncate">{organizationName || 'Free Plan'}</p>
           </div>
         </div>
       </div>
