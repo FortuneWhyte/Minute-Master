@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
 export default function Signup() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [orgName, setOrgName] = useState('');
@@ -21,6 +20,7 @@ export default function Signup() {
       password,
       options: {
         data: { organization_name: orgName },
+        emailRedirectTo: window.location.origin + '/login',
       },
     });
 
