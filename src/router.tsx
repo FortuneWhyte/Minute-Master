@@ -6,12 +6,16 @@ import Insights from './pages/Insights/Insights';
 import Settings from './pages/Settings/Settings';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 
 const router = createBrowserRouter([
   // Public routes
   { path: '/login', element: <Login /> },
   { path: '/signup', element: <Signup /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
+  { path: '/reset-password', element: <ResetPassword /> },
 
   // Protected routes
   {
